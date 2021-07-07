@@ -1,21 +1,25 @@
-const mongoose=require('mongoose');
+const mongoose = require("mongoose");
 
-const PostSchema=new mongoose.Schema({
-  userId:{type:mongoose.Types.ObjectId,ref:"User"},
-  fileurl:{
-       
-       type: String
+const PostSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      populate: { select: "fullname username profileUrl" },
     },
-  caption:{
-    type:String
-  }
-},
-{
+    fileurl: {
+      type: String,
+    },
+    caption: {
+      type: String,
+    },
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  },
+  {
     timestamps: true,
   }
-)
+);
 
+const Post = mongoose.model("Post", PostSchema);
 
-const Post=mongoose.model("Post",PostSchema);
-
-module.exports=Post
+module.exports = Post;
