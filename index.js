@@ -1,50 +1,44 @@
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const app = express();
+
+const authVerify = require("./middlewares/authverify");
 
 const userRouter = require("./routes/user.route");
 const postRouter = require("./routes/post.route");
 const followRouter = require("./routes/follow.route");
-
-const app = express();
+const authRouter = require("./routes/auth.route");
+const notificationRouter = require("./routes/notifications.route");
+const profileRoute = require("./routes/profile.route");
 
 app.use(cors());
 app.use(bodyParser.json());
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const initializedDBConnection = require("./db/db.connect");
-const Following = require("./models/following.model");
-const Post = require("./models/post.model");
 initializedDBConnection();
 
-app.use("/user", userRouter);
-app.use("/posts", postRouter);
-app.use("/followunfollow", followRouter);
+app.use("/auth", authRouter);
+app.use("/notifications", authVerify, notificationRouter);
+app.use("/user", authVerify, userRouter);
+app.use("/posts", authVerify, postRouter);
+app.use("/followunfollow", authVerify, followRouter);
+app.use("/profile", authVerify, profileRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello Social Media");
 });
 
-// app.get("/feed", async (req, res) => {
-//   try {
-//     let userId = req.headers.userid;
-//     // all the users i follow
-//     const usersIFollow = await Following.find({ userId }).select("followingId");
+// route 404 do not move
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "route not found on server",
+  });
+});
 
-//     const ids = usersIFollow.map((user) => user.followingId);
-//     // get their latest posts
-//     const postOfUsersIFollow = await Post.find({ userId: { $in: ids } }).sort([
-//       ["createdAt", -1],
-//     ]);
-
-//     res.json({ success: true, postOfUsersIFollow });
-//   } catch (error) {
-//     res.json({ success: false, mesg: error.message });
-//   }
-// });
-
-app.listen(7000, () => {
+app.listen(process.env.PORT || 7000, () => {
   console.log("Server Started");
 });
