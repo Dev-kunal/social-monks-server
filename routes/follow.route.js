@@ -7,12 +7,12 @@ const Notification = require("../models/notification.model");
 const createFollowedNotification = async (followingId, userId) => {
   try {
     const notification = {
-      notificationType: "NEW FOLLOWER",
+      notificationType: "NEWFOLLOWER",
       targetUser: followingId,
       sourceUser: userId,
     };
     const savedNotification = await Notification.create(notification);
-    console.log(savedNotification);
+    // console.log(savedNotification);
   } catch (error) {
     console.log(error);
   }

@@ -32,35 +32,20 @@ router.route("/:postId").get(async (req, res) => {
     res.json({ success: false, mesg: error.message });
   }
 });
-router
-  .route("/")
-  // .get(async (req, res) => {
-  //   try {
-  //     // console.log("getting it ", req.params.postId);
-  //     const post = await Post.findOne({ _id: req.params.postId }).populate({
-  //       path: "userId",
-  //       select: "fullname username profileUrl",
-  //       model: "User",
-  //     });
-  //     res.json({ success: true, post });
-  //   } catch (error) {
-  //     res.json({ success: false, mesg: error.message });
-  //   }
-  // })
-  .post(async (req, res) => {
-    try {
-      let { fileurl, caption } = req.body;
-      const Newpost = new Post({
-        userId: req.user.userId,
-        fileurl,
-        caption,
-      });
-      const savedPost = await Newpost.save();
-      res.json({ success: true, savedPost });
-    } catch (error) {
-      res.json({ success: false, mesg: error.message });
-    }
-  });
+router.route("/").post(async (req, res) => {
+  try {
+    let { fileurl, caption } = req.body;
+    const Newpost = new Post({
+      userId: req.user.userId,
+      fileurl,
+      caption,
+    });
+    const savedPost = await Newpost.save();
+    res.json({ success: true, savedPost });
+  } catch (error) {
+    res.json({ success: false, mesg: error.message });
+  }
+});
 
 router.route("/like").post(async (req, res) => {
   try {
