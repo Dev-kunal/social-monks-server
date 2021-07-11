@@ -7,11 +7,11 @@ const login = async (req, res) => {
     let { username, password } = req.body;
     let user = await User.findOne({ username });
     if (!user) {
-      res.status(404).json({ message: "User does not exist" });
+      res.json({ success: false, message: "User does not exist" });
     }
     const match = await bcrypt.compareSync(password, user.password);
     if (!match) {
-      res.status(401).json({ message: "incorrect password" });
+      res.json({ success: false, message: "Incorrect Password" });
     }
     user = await user.save();
     const token = jwt.sign(
@@ -20,10 +20,10 @@ const login = async (req, res) => {
       { expiresIn: "24h" }
     );
     user.password = undefined;
-    res.status(200).json({ user, token });
+    res.status(200).json({ success: true, user, token });
   } catch (error) {
     console.log(error);
-    res.status(404).json({ success: false });
+    res.json({ success: false, message: "Something went wrong" });
   }
 };
 

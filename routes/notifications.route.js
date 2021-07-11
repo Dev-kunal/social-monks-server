@@ -9,7 +9,7 @@ router.route("/").get(async (req, res) => {
     })
       .sort({ createdAt: -1 })
       .populate("sourceUser");
-    console.log(notifications);
+    // console.log(notifications);
     res.status(201).json({ success: true, notifications });
   } catch (error) {
     res.json({ sucess: false, mesg: error.message });

@@ -19,16 +19,34 @@ const createLikeNotification = async (postId, sourceUserId, targetUserId) => {
   }
 };
 
+router.route("/:postId").get(async (req, res) => {
+  try {
+    // console.log("getting it ", req.params.postId);
+    const post = await Post.findOne({ _id: req.params.postId }).populate({
+      path: "userId",
+      select: "fullname username profileUrl",
+      model: "User",
+    });
+    res.json({ success: true, post });
+  } catch (error) {
+    res.json({ success: false, mesg: error.message });
+  }
+});
 router
   .route("/")
-  .get(async (req, res) => {
-    try {
-      const allPosts = await Post.find({});
-      res.json({ success: true, allPosts });
-    } catch (error) {
-      res.json({ success: false, mesg: error.message });
-    }
-  })
+  // .get(async (req, res) => {
+  //   try {
+  //     // console.log("getting it ", req.params.postId);
+  //     const post = await Post.findOne({ _id: req.params.postId }).populate({
+  //       path: "userId",
+  //       select: "fullname username profileUrl",
+  //       model: "User",
+  //     });
+  //     res.json({ success: true, post });
+  //   } catch (error) {
+  //     res.json({ success: false, mesg: error.message });
+  //   }
+  // })
   .post(async (req, res) => {
     try {
       let { fileurl, caption } = req.body;
@@ -57,7 +75,7 @@ router.route("/like").post(async (req, res) => {
         model: "User",
       })
       .execPopulate();
-    console.log(postToLike);
+
     if (postToLike.userId._id != req.user.userId) {
       await createLikeNotification(
         postId,

@@ -3,7 +3,6 @@ const Following = require("../../models/following.model");
 
 const feed = async (req, res) => {
   try {
-    console.log("feed");
     let userId = req.user.userId;
     const usersIFollow = await Following.find({ userId }).select("followingId");
     const ids = usersIFollow.map((user) => user.followingId);

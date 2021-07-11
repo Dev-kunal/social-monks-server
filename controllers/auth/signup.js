@@ -6,14 +6,12 @@ const signup = async (req, res) => {
   try {
     let user = await User.findOne({ email });
     if (user) {
-      res
-        .status(409)
-        .json({ message: "A user is already registered with this Email" });
+      res.json({ message: "A user is already registered with this Email" });
       return;
     }
     user = await User.findOne({ username });
     if (user) {
-      res.status(409).json({ message: "Username is already taken" });
+      res.json({ message: "Username is already taken" });
       return;
     }
     const salt = bcrypt.genSaltSync(10);
@@ -26,10 +24,12 @@ const signup = async (req, res) => {
     };
     const NewUser = await User.create(newUser);
     // console.log(NewUser);
-    res.status(201).json({ success: true, mesg: "user registered" });
+    res
+      .status(201)
+      .json({ success: true, message: "User registered successfully..!" });
   } catch (error) {
     console.log(err);
-    res.status(404).json({ success: false, mesg: error.message });
+    res.status(404).json({ success: false, message: error.message });
   }
 };
 
