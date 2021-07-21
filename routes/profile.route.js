@@ -24,9 +24,26 @@ router.route("/:userId").get(async (req, res) => {
       {
         $lookup: {
           from: "followings",
-          localField: "_id",
-          foreignField: "userId",
+          let: {
+            userId: "$_id",
+          },
           as: "following",
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ["$userId", "$$userId"],
+                    },
+                    {
+                      $eq: ["$followStatus", "following"],
+                    },
+                  ],
+                },
+              },
+            },
+          ],
         },
       },
       // finds all my followers

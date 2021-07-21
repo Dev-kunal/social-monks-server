@@ -17,6 +17,20 @@ const createFollowedNotification = async (followingId, userId) => {
     console.log(error);
   }
 };
+const deleteFollowedNotification = async (followingId, userId) => {
+  try {
+    const filter = {
+      $and: [
+        { notificationType: "NEWFOLLOWER" },
+        { targetUser: followingId },
+        { sourceUser: userId },
+      ],
+    };
+    const result = await Notification.findOneAndRemove(filter);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 router
   .route("/")
@@ -39,6 +53,7 @@ router
         if (followRecord.followStatus === "following") {
           followRecord.followStatus = "notfollowing";
           await followRecord.save();
+          await deleteFollowedNotification(followingId, userId);
           res.json({ sucess: true, unfollowed: true });
         } else {
           followRecord.followStatus = "following";

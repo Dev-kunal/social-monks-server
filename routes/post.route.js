@@ -18,10 +18,24 @@ const createLikeNotification = async (postId, sourceUserId, targetUserId) => {
     console.log(error);
   }
 };
+const deleteLikeNotification = async (postId, sourceUserId, targetUserId) => {
+  try {
+    const filter = {
+      $and: [
+        { notificationType: "LIKE" },
+        { post: postId },
+        { targetUser: targetUserId },
+        { sourceUser: sourceUserId },
+      ],
+    };
+    const result = await Notification.findOneAndRemove(filter);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 router.route("/:postId").get(async (req, res) => {
   try {
-    // console.log("getting it ", req.params.postId);
     const post = await Post.findOne({ _id: req.params.postId }).populate({
       path: "userId",
       select: "fullname username profileUrl",
@@ -87,6 +101,11 @@ router.route("/unlike").post(async (req, res) => {
         model: "User",
       })
       .execPopulate();
+    await deleteLikeNotification(
+      postId,
+      req.user.userId,
+      postToUnlike.userId._id
+    );
     res.status(201).json({ success: true, unLikedPost });
   } catch (error) {
     res.json({ success: false, mesg: error.message });

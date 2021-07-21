@@ -4,7 +4,10 @@ const Following = require("../../models/following.model");
 const feed = async (req, res) => {
   try {
     let userId = req.user.userId;
-    const usersIFollow = await Following.find({ userId }).select("followingId");
+    const filter = {
+      $and: [{ userId: userId }, { followStatus: "following" }],
+    };
+    const usersIFollow = await Following.find(filter).select("followingId");
     const ids = usersIFollow.map((user) => user.followingId);
     const postOfUsersIFollow = await Post.find({ userId: { $in: ids } })
       .sort([["createdAt", -1]])
