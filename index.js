@@ -19,6 +19,15 @@ const initializedDBConnection = require("./db/db.connect");
 const routeHandler = require("./middlewares/routeHandler");
 initializedDBConnection();
 
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.use("/auth", authRouter);
 app.use("/notifications", authVerify, notificationRouter);
 app.use("/user", authVerify, userRouter);
